@@ -5,16 +5,21 @@ Answer each question in 3 to 5 sentences. Be specific and honest about what actu
 ## 1. What was broken when you started?
 
 - What did the game look like the first time you ran it?
+I was able to play but when trying to continue guessing it gave me issues.
 - List at least two concrete bugs you noticed at the start  
-  (for example: "the hints were backwards").
+1. The reset feature does not reset properly
+2. The range for the hard level was below 0
 
 ---
 
 ## 2. How did you use AI as a teammate?
 
 - Which AI tools did you use on this project (for example: ChatGPT, Gemini, Copilot)?
+I used Claude and Copilot
 - Give one example of an AI suggestion that was correct (including what the AI suggested and how you verified the result).
+
 - Give one example of an AI suggestion that was incorrect or misleading (including what the AI suggested and how you verified the result).
+It was not 
 
 ---
 

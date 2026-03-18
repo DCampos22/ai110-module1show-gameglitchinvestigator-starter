@@ -1,6 +1,8 @@
 import random
 import streamlit as st
 
+from logic_utils import check_guess, update_score
+
 def get_range_for_difficulty(difficulty: str):
     if difficulty == "Easy":
         return 1, 20
@@ -33,18 +35,21 @@ def check_guess(guess, secret):
     if guess == secret:
         return "Win", "🎉 Correct!"
 
+        # FIX: Corrected hint logic after using AI to identify that the directions were reversed.
+    # Verified by testing guesses above and below the secret number in the game.
+
     try:
         if guess > secret:
-            return "Too High", "📈 Go HIGHER!"
+            return "Too High", "📉 Go LOWER!"
         else:
-            return "Too Low", "📉 Go LOWER!"
+            return "Too Low", "📈 Go HIGHER!"
     except TypeError:
         g = str(guess)
         if g == secret:
             return "Win", "🎉 Correct!"
-        if g > secret:
-            return "Too High", "📈 Go HIGHER!"
-        return "Too Low", "📉 Go LOWER!"
+        if guess > secret:
+            return "Too High", "📉 Go LOWER!"
+        return "Too Low", "📈 Go HIGHER!"
 
 
 def update_score(current_score: int, outcome: str, attempt_number: int):
@@ -93,7 +98,9 @@ if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
 
 if "attempts" not in st.session_state:
-    st.session_state.attempts = 1
+    st.session_state.attempts = 0
+   # FIX: Attempt counter previously started at 1 which caused the first guess to appear as attempt 2.
+    # AI suggested checking initialization logic, and I verified by running the game. 
 
 if "score" not in st.session_state:
     st.session_state.score = 0
@@ -107,7 +114,9 @@ if "history" not in st.session_state:
 st.subheader("Make a guess")
 
 st.info(
-    f"Guess a number between 1 and 100. "
+    # FIX: Updated range display to use difficulty bounds instead of always showing 1–100.
+    # Verified by switching difficulty levels in the UI.
+    f"Guess a number between {low} and {high}. " # so number changes in regards to dfficulty 
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
@@ -116,7 +125,8 @@ with st.expander("Developer Debug Info"):
     st.write("Attempts:", st.session_state.attempts)
     st.write("Score:", st.session_state.score)
     st.write("Difficulty:", difficulty)
-    st.write("History:", st.session_state.history)
+    history_text = ", ".join(map(str, st.session_state.history)) if st.session_state.history else "(empty)"
+    st.write("History:", history_text)
 
 raw_guess = st.text_input(
     "Enter your guess:",
@@ -132,8 +142,9 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
 if new_game:
+    ##fix the difficulty 
     st.session_state.attempts = 0
-    st.session_state.secret = random.randint(1, 100)
+    st.session_state.secret = random.randint(low, high)   
     st.success("New game started.")
     st.rerun()
 
@@ -155,10 +166,9 @@ if submit:
     else:
         st.session_state.history.append(guess_int)
 
-        if st.session_state.attempts % 2 == 0:
-            secret = str(st.session_state.secret)
-        else:
-            secret = st.session_state.secret
+        # FIX: Improved history display so guesses appear clearly instead of raw list format
+
+        secret = st.session_state.secret
 
         outcome, message = check_guess(guess_int, secret)
 
